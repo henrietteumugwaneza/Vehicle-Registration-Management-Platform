@@ -1,14 +1,21 @@
-export default function FormInput({ label, error, ...props }) {
+export default function FormInput({ label, error, as: Tag = "input", children, ...props }) {
   return (
-    <div className="mb-3">
-      <label>{label}</label>
-      <input
-        {...props}
-        className={`border p-2 w-full ${
-          error ? "border-red-500" : "border-gray-300"
-        }`}
-      />
-      {error && <p className="text-red-500 text-sm">{error}</p>}
+    <div className="flex flex-col gap-1">
+      {label && <label className="label">{label}</label>}
+      {Tag === "select" ? (
+        <select
+          {...props}
+          className={`input-field ${error ? "input-error" : ""} ${props.className || ""}`}
+        >
+          {children}
+        </select>
+      ) : (
+        <Tag
+          {...props}
+          className={`input-field ${error ? "input-error" : ""} ${props.className || ""}`}
+        />
+      )}
+      {error && <p className="text-red-400 text-xs mt-0.5">{error}</p>}
     </div>
   );
 }

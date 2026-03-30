@@ -1,18 +1,100 @@
-# React + Vite
+# Vehicle Registration & Management Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A production-grade vehicle registration and management dashboard built with React, TanStack Query, React Hook Form, and Zod.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Public vehicle listing** — Browse all registered vehicles without authentication
+- **Client-side authentication** — Secure mock login with Context API + localStorage persistence
+- **Protected routes** — Dashboard, registration, and detail views require login
+- **Multi-step registration form** — 3-step wizard (Vehicle Info → Owner Info → Registration & Insurance)
+- **Strict client-side validation** — Zod schemas mirror backend rules exactly (enums, regex, conditional fields)
+- **Segmented detail view** — Tabbed interface fetching `/info`, `/owner`, `/registration`, `/insurance` independently
+- **Full CRUD** — Create, view, edit, and delete vehicles with confirmation modals
+- **TanStack Query caching** — Queries cached per segment; mutations auto-invalidate
+- **Toast notifications** — Success/error feedback via react-hot-toast
+- **Professional dark UI** — Tailwind CSS v4 with a slate/indigo design system
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+| Tool | Purpose |
+|------|---------|
+| React 19 + Vite | UI framework & build tool |
+| React Router v7 | Client-side routing & protected routes |
+| TanStack Query v5 | Data fetching, caching, mutations |
+| React Hook Form + Zod | Form state & validation |
+| Axios | HTTP client |
+| Tailwind CSS v4 | Styling |
+| react-hot-toast | Toast notifications |
+| lucide-react | Icons |
 
-Note: This will impact Vite dev & build performances.
+## Getting Started
 
-## Expanding the ESLint configuration
+```bash
+# Install dependencies
+npm install
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+```
+
+## Demo Credentials
+
+```
+Email:    test@gmail.com
+Password: Password!234
+```
+
+## State Management Approach
+
+- **AuthContext** — Wraps the app and exposes `isAuthenticated`, `login()`, `logout()`. Session flag persisted in `localStorage` so users stay logged in on refresh.
+- **TanStack Query** — All GET requests use `useQuery` with granular query keys (e.g. `["vehicle-info", id]`). This means switching tabs on the details page only fetches the segment once and caches it. POST/PUT/DELETE use `useMutation` which calls `invalidateQueries` on success to keep the list fresh.
+- **React Hook Form** — Each form step manages its own local state. The parent `VehicleForm` accumulates step data in a `formData` object and merges it on final submit.
+
+## Project Structure
+
+```
+src/
+├── app/
+│   ├── queryClient.js       # TanStack Query client
+│   └── router.jsx           # All routes (public + protected)
+├── components/
+│   ├── FormInput.jsx        # Reusable input with error state
+│   ├── Navbar.jsx           # Auth-aware navigation
+│   ├── ProtectedRoute.jsx   # Route guard
+│   ├── Table.jsx            # Vehicle data table
+│   └── Tabs.jsx             # Tabbed content switcher
+├── context/
+│   └── AuthContext.jsx      # Auth state + login/logout
+├── pages/
+│   ├── VehicleForm/
+│   │   ├── index.jsx        # Multi-step orchestrator
+│   │   ├── Step1.jsx        # Vehicle info
+│   │   ├── Step2.jsx        # Owner info
+│   │   └── Step3.jsx        # Registration & insurance
+│   ├── Dashboard.jsx        # Protected admin view
+│   ├── Home.jsx             # Public vehicle list
+│   ├── Login.jsx            # Auth form
+│   └── VehicleDetails.jsx   # Segmented detail tabs
+└── services/
+    ├── api.js               # Axios instance
+    └── validation.js        # Zod schemas for all 3 steps
+```
+
+## API
+
+Base URL: `https://student-management-system-backend.up.railway.app/api/vehicle-service`
+
+| Method | Endpoint | Auth |
+|--------|----------|------|
+| GET | `/vehicle` | Public |
+| POST | `/vehicle` | Required |
+| PUT | `/vehicle/:id` | Required |
+| DELETE | `/vehicle/:id` | Required |
+| GET | `/vehicle/:id/info` | Required |
+| GET | `/vehicle/:id/owner` | Required |
+| GET | `/vehicle/:id/registration` | Required |
+| GET | `/vehicle/:id/insurance` | Required |

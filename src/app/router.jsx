@@ -29,6 +29,15 @@ export const router = createBrowserRouter([
   },
 
   {
+    path: "/vehicle/:id/edit",
+    element: (
+      <ProtectedRoute>
+        <VehicleForm />
+      </ProtectedRoute>
+    ),
+  },
+
+  {
     path: "/vehicle/:id",
     element: (
       <ProtectedRoute>
