@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
+import StatusBadge from "../components/StatusBadge";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 import {
@@ -75,9 +76,9 @@ export default function Dashboard() {
 
   const stats = {
     total: data?.length ?? 0,
-    active: data?.filter((v) => v.status === "ACTIVE").length ?? 0,
-    expired: data?.filter((v) => v.status === "EXPIRED").length ?? 0,
-    pending: data?.filter((v) => v.status === "PENDING").length ?? 0,
+    active: data?.filter((v) => v.registrationStatus === "ACTIVE").length ?? 0,
+    expired: data?.filter((v) => v.registrationStatus === "EXPIRED").length ?? 0,
+    pending: data?.filter((v) => v.registrationStatus === "PENDING").length ?? 0,
   };
 
   return (
@@ -146,7 +147,9 @@ export default function Dashboard() {
                     <th className="pb-3 font-medium">Make / Model</th>
                     <th className="pb-3 font-medium">Year</th>
                     <th className="pb-3 font-medium">Type</th>
-                    <th className="pb-3 font-medium">Status</th>
+                    <th className="pb-3 font-medium">Vehicle</th>
+                    <th className="pb-3 font-medium">Registration</th>
+                    <th className="pb-3 font-medium">Insurance</th>
                     <th className="pb-3 font-medium text-right">Actions</th>
                   </tr>
                 </thead>
@@ -156,16 +159,17 @@ export default function Dashboard() {
                       <td className="py-3 font-mono text-indigo-300 text-xs">{v.plateNumber || "—"}</td>
                       <td className="py-3 text-slate-200">{v.manufacture} {v.model}</td>
                       <td className="py-3 text-slate-400">{v.year}</td>
-                      <td className="py-3 text-slate-400">{v.vehicleType}</td>
                       <td className="py-3">
-                        <span className={`badge ${
-                          v.status === "ACTIVE" ? "bg-emerald-500/20 text-emerald-400" :
-                          v.status === "EXPIRED" ? "bg-red-500/20 text-red-400" :
-                          v.status === "PENDING" ? "bg-blue-500/20 text-blue-400" :
-                          "bg-slate-700 text-slate-300"
-                        }`}>
-                          {v.status || "—"}
-                        </span>
+                        <StatusBadge value={v.vehicleType} />
+                      </td>
+                      <td className="py-3">
+                        <StatusBadge value={v.vehicleStatus} />
+                      </td>
+                      <td className="py-3">
+                        <StatusBadge value={v.registrationStatus} />
+                      </td>
+                      <td className="py-3">
+                        <StatusBadge value={v.insuranceStatus} />
                       </td>
                       <td className="py-3">
                         <div className="flex items-center justify-end gap-3">

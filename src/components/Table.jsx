@@ -1,13 +1,7 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Eye } from "lucide-react";
-
-const statusColors = {
-  ACTIVE: "bg-emerald-500/20 text-emerald-400",
-  SUSPENDED: "bg-yellow-500/20 text-yellow-400",
-  EXPIRED: "bg-red-500/20 text-red-400",
-  PENDING: "bg-blue-500/20 text-blue-400",
-};
+import StatusBadge from "./StatusBadge";
 
 export default function Table({ data }) {
   const { isAuthenticated } = useAuth();
@@ -29,7 +23,9 @@ export default function Table({ data }) {
             <th className="px-4 py-3 font-medium">Make / Model</th>
             <th className="px-4 py-3 font-medium">Year</th>
             <th className="px-4 py-3 font-medium">Type</th>
-            <th className="px-4 py-3 font-medium">Status</th>
+            <th className="px-4 py-3 font-medium">Vehicle</th>
+            <th className="px-4 py-3 font-medium">Registration</th>
+            <th className="px-4 py-3 font-medium">Insurance</th>
             {isAuthenticated && <th className="px-4 py-3 font-medium">Actions</th>}
           </tr>
         </thead>
@@ -37,15 +33,19 @@ export default function Table({ data }) {
           {data.map((v) => (
             <tr key={v.id} className="hover:bg-slate-800/40 transition-colors">
               <td className="px-4 py-3 font-mono text-indigo-300">{v.plateNumber || "—"}</td>
-              <td className="px-4 py-3 text-slate-200">
-                {v.manufacture} {v.model}
-              </td>
+              <td className="px-4 py-3 text-slate-200">{v.manufacture} {v.model}</td>
               <td className="px-4 py-3 text-slate-300">{v.year}</td>
-              <td className="px-4 py-3 text-slate-300">{v.vehicleType}</td>
               <td className="px-4 py-3">
-                <span className={`badge ${statusColors[v.status] || "bg-slate-700 text-slate-300"}`}>
-                  {v.status || "—"}
-                </span>
+                <StatusBadge value={v.vehicleType} />
+              </td>
+              <td className="px-4 py-3">
+                <StatusBadge value={v.vehicleStatus} />
+              </td>
+              <td className="px-4 py-3">
+                <StatusBadge value={v.registrationStatus} />
+              </td>
+              <td className="px-4 py-3">
+                <StatusBadge value={v.insuranceStatus} />
               </td>
               {isAuthenticated && (
                 <td className="px-4 py-3">

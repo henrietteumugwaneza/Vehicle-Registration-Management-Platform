@@ -3,16 +3,23 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
 import Tabs from "../components/Tabs";
+import StatusBadge from "../components/StatusBadge";
 import toast from "react-hot-toast";
 import { useState } from "react";
 import { Edit, Trash2, ArrowLeft, AlertTriangle, RefreshCw } from "lucide-react";
 
-function DetailRow({ label, value }) {
+const STATUS_KEYS = new Set(["vehicleStatus", "registrationStatus", "insuranceStatus", "vehicleType"]);
+
+function DetailRow({ label, value, fieldKey }) {
   if (value === undefined || value === null || value === "") return null;
   return (
     <div className="flex flex-col sm:flex-row sm:items-center py-3 border-b border-slate-800 last:border-0">
       <span className="text-slate-400 text-sm w-48 shrink-0">{label}</span>
-      <span className="text-slate-100 text-sm font-medium mt-0.5 sm:mt-0">{String(value)}</span>
+      {STATUS_KEYS.has(fieldKey) ? (
+        <StatusBadge value={String(value)} />
+      ) : (
+        <span className="text-slate-100 text-sm font-medium mt-0.5 sm:mt-0">{String(value)}</span>
+      )}
     </div>
   );
 }
@@ -23,7 +30,7 @@ function Section({ title, data, fields }) {
       <h3 className="text-xs font-semibold text-indigo-400 uppercase tracking-wider mb-3">{title}</h3>
       <div className="card">
         {fields.map(({ label, key }) => (
-          <DetailRow key={key} label={label} value={data?.[key]} />
+          <DetailRow key={key} label={label} value={data?.[key]} fieldKey={key} />
         ))}
       </div>
     </div>
